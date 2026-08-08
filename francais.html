@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réserve d'idées — français avec Aziz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #fbf6ec;
+    --bg-card: #ffffff;
+    --bg-card-hover: #fff9ee;
+    --bg-script: #faf3e6;
+    --bg-exo: #f4f8f5;
+    --bg-solution: #eef6f1;
+    --bg-insp: #fdf2ee;
+    --line: #ecdfc4;
+    --sea: #3f8fbf;
+    --citrus: #e8a23d;
+    --coral: #e07a5f;
+    --mint: #6fae8e;
+    --text: #223b45;
+    --muted: #6b7f86;
+    --eyebrow: #4a7e94;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  .bg-graph { position: fixed; inset: 0; z-index: 0; opacity: 0.5; pointer-events: none; }
+
+  .wrap { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 72px 24px 96px; }
+
+  header { margin-bottom: 64px; }
+
+  .breadcrumb {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .breadcrumb a { color: var(--eyebrow); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--eyebrow); margin-bottom: 18px;
+  }
+  .eyebrow::before { content: "☀ "; color: var(--citrus); }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(30px, 4.5vw, 46px);
+    line-height: 1.12; margin: 0 0 20px; letter-spacing: -0.01em; color: var(--text);
+  }
+  h1 span {
+    background: linear-gradient(120deg, var(--coral), var(--citrus));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .lede { font-size: 16.5px; color: var(--muted); max-width: 60ch; margin: 0 0 8px; }
+
+  .stats {
+    display: flex; gap: 40px; margin-top: 36px; padding-top: 28px;
+    border-top: 1px solid var(--line); flex-wrap: wrap;
+  }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600; color: var(--coral); }
+  .stat-label { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  section.axis { margin-bottom: 52px; }
+
+  .axis-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; }
+  .axis-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--eyebrow);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; flex-shrink: 0; background: var(--bg-card);
+  }
+  .axis-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; margin: 0; }
+  .axis-note { font-size: 13px; color: var(--muted); margin: 6px 0 0 78px; }
+
+  .cards { display: grid; gap: 14px; }
+
+  details.card {
+    background: var(--bg-card); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; transition: border-color 0.2s ease;
+  }
+  details.card:hover { border-color: var(--sea); }
+  details.card[open] { border-color: var(--sea); }
+
+  summary.card-summary { list-style: none; cursor: pointer; padding: 22px 24px; }
+  summary.card-summary::-webkit-details-marker { display: none; }
+  summary.card-summary::marker { content: ""; }
+
+  .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; margin: 0 0 8px; color: var(--text); }
+  .card-body { font-size: 14.5px; color: var(--muted); margin: 0 0 16px; }
+
+  .script {
+    background: var(--bg-script); border-left: 3px solid var(--coral);
+    border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 0 0 16px;
+  }
+  .script-line { display: flex; gap: 10px; font-size: 13.5px; margin-bottom: 8px; }
+  .script-line:last-child { margin-bottom: 0; }
+  .script-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--coral); flex-shrink: 0; padding-top: 2px; width: 68px;
+  }
+  .script-text { color: var(--text); margin: 0; }
+  .script-text.quote { font-style: italic; }
+
+  .foot-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; color: #2f7a5c; background: rgba(111, 174, 142, 0.12);
+    border: 1px solid rgba(111, 174, 142, 0.35); border-radius: 20px; padding: 4px 12px;
+  }
+  .tag::before { content: "◇"; }
+  .axis:nth-of-type(2) .tag { color: #b5691f; background: rgba(232, 162, 61, 0.14); border-color: rgba(232, 162, 61, 0.4); }
+  .axis:nth-of-type(3) .tag { color: #2b6f8f; background: rgba(63, 143, 191, 0.12); border-color: rgba(63, 143, 191, 0.35); }
+
+  .expand-hint {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; font-weight: 500; color: var(--sea); border: 1px solid rgba(63, 143, 191, 0.4);
+    background: rgba(63, 143, 191, 0.08); border-radius: 20px; padding: 4px 12px; white-space: nowrap;
+  }
+  .expand-hint .chevron { transition: transform 0.2s ease; display: inline-block; }
+  details.card[open] .expand-hint .chevron { transform: rotate(180deg); }
+  details.card[open] .expand-hint .expand-label::after { content: "masquer"; }
+  details.card:not([open]) .expand-hint .expand-label::after { content: attr(data-count); }
+
+  /* --- panneau exercices (axes 1 et 3, réponse vérifiable) --- */
+  .exercises { padding: 4px 24px 24px; border-top: 1px solid var(--line); background: var(--bg-exo); }
+  .exo { padding: 18px 0; border-bottom: 1px dashed var(--line); }
+  .exo:last-child { border-bottom: none; }
+  .exo-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .exo-num {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: #fff;
+    background: var(--mint); border-radius: 50%; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .exo-statement { margin: 0; font-size: 14.5px; color: var(--text); }
+
+  details.solution { margin-left: 34px; }
+  details.solution summary {
+    cursor: pointer; list-style: none; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    color: var(--coral); display: inline-flex; align-items: center; gap: 6px;
+  }
+  details.solution summary::-webkit-details-marker { display: none; }
+  details.solution summary::before { content: "▸"; transition: transform 0.15s ease; }
+  details.solution[open] summary::before { transform: rotate(90deg); }
+  details.solution summary::after { content: "Voir la solution"; }
+  details.solution[open] summary::after { content: "Solution"; }
+
+  .solution-text {
+    margin: 10px 0 0; padding: 10px 14px; background: var(--bg-solution);
+    border-left: 3px solid var(--mint); border-radius: 0 8px 8px 0; font-size: 14px; color: var(--text);
+  }
+
+  /* --- panneau ingrédients (axe 2, écriture, pas de solution unique) --- */
+  .ingredients { padding: 4px 24px 24px; border-top: 1px solid var(--line); background: var(--bg-insp); }
+  .ing { padding: 18px 0; border-bottom: 1px dashed var(--line); }
+  .ing:last-child { border-bottom: none; }
+  .ing-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .ing-num {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: #fff;
+    background: var(--coral); border-radius: 50%; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .ing-statement { margin: 0; font-size: 14.5px; color: var(--text); }
+
+  details.exemple { margin-left: 34px; }
+  details.exemple summary {
+    cursor: pointer; list-style: none; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    color: var(--coral); display: inline-flex; align-items: center; gap: 6px;
+  }
+  details.exemple summary::-webkit-details-marker { display: none; }
+  details.exemple summary::before { content: "✎"; }
+  details.exemple summary::after { content: "Voir une étincelle"; }
+  details.exemple[open] summary::after { content: "Étincelle"; }
+
+  .exemple-text {
+    margin: 10px 0 0; padding: 10px 14px; background: #fff; border-left: 3px solid var(--coral);
+    border-radius: 0 8px 8px 0; font-size: 14px; color: var(--text); font-style: italic;
+  }
+
+  .rules { margin-top: 64px; padding-top: 36px; border-top: 1px solid var(--line); }
+  .rules h2 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; margin: 0 0 22px; color: var(--text); }
+  .rule { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .rule:last-child { border-bottom: none; }
+  .rule-mark { color: var(--coral); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .rule p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  footer { margin-top: 56px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--eyebrow); text-align: center; }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 48px 18px 64px; }
+    .script-line { flex-direction: column; gap: 2px; }
+    .script-label { width: auto; }
+    details.solution, details.exemple { margin-left: 0; }
+    .axis-note { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="bg-graph" viewBox="0 0 900 1400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g stroke="#e0c98f" stroke-width="1" opacity="0.6">
+    <line x1="80" y1="120" x2="240" y2="220"/>
+    <line x1="240" y1="220" x2="180" y2="380"/>
+    <line x1="240" y1="220" x2="420" y2="200"/>
+    <line x1="700" y1="160" x2="560" y2="280"/>
+    <line x1="560" y1="280" x2="640" y2="440"/>
+    <line x1="120" y1="700" x2="280" y2="640"/>
+    <line x1="280" y1="640" x2="340" y2="820"/>
+    <line x1="750" y1="820" x2="600" y2="900"/>
+    <line x1="600" y1="900" x2="680" y2="1060"/>
+    <line x1="200" y1="1100" x2="360" y2="1180"/>
+    <line x1="360" y1="1180" x2="300" y2="1320"/>
+  </g>
+  <g fill="#e8a23d">
+    <circle cx="80" cy="120" r="3"/><circle cx="420" cy="200" r="2.5"/><circle cx="700" cy="160" r="3"/>
+    <circle cx="640" cy="440" r="2.5"/><circle cx="120" cy="700" r="3"/><circle cx="340" cy="820" r="2.5"/>
+    <circle cx="750" cy="820" r="3"/><circle cx="680" cy="1060" r="2.5"/><circle cx="200" cy="1100" r="3"/>
+    <circle cx="300" cy="1320" r="2.5"/>
+  </g>
+  <g fill="#3f8fbf">
+    <circle cx="240" cy="220" r="4"/><circle cx="560" cy="280" r="4"/><circle cx="280" cy="640" r="4"/>
+    <circle cx="600" cy="900" r="4"/><circle cx="360" cy="1180" r="4"/>
+  </g>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <div class="breadcrumb"><a href="index.html">Portail Zizou</a> · Français</div>
+    <div class="eyebrow">Carnet à piocher, pas un programme</div>
+    <h1>Réserve d'idées pour <span>les séances français</span> au café avec Aziz</h1>
+    <p class="lede">Trois axes, une idée par matin. Les axes 1 et 3 ont des exercices à solution vérifiable, comme en maths. L'axe 2 fonctionne autrement : pas de bonne réponse unique, juste des ingrédients à respecter et une étincelle pour s'inspirer.</p>
+    <div class="stats">
+      <div><div class="stat-num">3</div><div class="stat-label">axes prioritaires</div></div>
+      <div><div class="stat-num">12</div><div class="stat-label">idées à piocher</div></div>
+      <div><div class="stat-num">36</div><div class="stat-label">pistes prêtes</div></div>
+      <div><div class="stat-num">≤ 1h</div><div class="stat-label">par séance</div></div>
+    </div>
+  </header>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">01</span><h2 class="axis-title">Automatismes de langue</h2></div>
+    <p class="axis-note">Orthographe et grammaire, celles qui reviennent le plus souvent d'un bulletin à l'autre.</p>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le duel d'accords</h3>
+          <p class="card-body">Vous donnez un groupe nominal au singulier, Aziz le met au pluriel avant vous, à l'oral.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Je te donne un groupe au singulier, tu le mets au pluriel avant moi. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Annoncer un groupe nominal avec adjectif, il le met au pluriel à l'oral, on vérifie ensemble les accords.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Ça prend : ajouter un adjectif de couleur invariable, du type « orange ». Ça bloque : ralentir et donner un indice.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">accords dans le groupe nominal</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Mets au pluriel : « un beau jardin fleuri »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« De beaux jardins fleuris. » Beau devient beaux, jardin devient jardins, fleuri s'accorde aussi au pluriel.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Mets au pluriel : « une jupe orange » (attention, il y a un piège)</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Des jupes orange. » Orange, comme les noms de couleur issus de fruits ou de fleurs, reste invariable.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Accorde correctement : « Les fleurs (rouge) sentaient bon dans le jardin (parfumé). »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Les fleurs rouges sentaient bon dans le jardin parfumé. » Rouge s'accorde car c'est une couleur simple, parfumé s'accorde avec jardin, masculin singulier.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le conditionnel qui doute</h3>
+          <p class="card-body">Une chaîne de phrases en « si... , tu... » où chacun complète la phrase de l'autre au conditionnel.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Si tu gagnais au loto, qu'est-ce que tu ferais ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Chaîne de phrases en « si plus imparfait, plus conditionnel », chacun enchaîne sur l'autre.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Compliquer avec des verbes irréguliers, aller, être, avoir, faire, pouvoir, vouloir.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">conjugaison du conditionnel présent</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Conjugue « aller » : « Si tu avais le temps, tu ... au cinéma. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Tu irais. » Le radical irrégulier du conditionnel pour aller est « ir- ».</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Conjugue « pouvoir » : « Si on partait tôt, nous ... visiter deux endroits. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Nous pourrions. » Le radical irrégulier de pouvoir au conditionnel est « pourr- ».</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Repère et corrige l'erreur : « Si j'aurais plus de temps, je lirais davantage. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Si j'avais plus de temps, je lirais davantage. » On ne met jamais le conditionnel après le « si » de condition, mais l'imparfait.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le participe qui s'accorde ou pas</h3>
+          <p class="card-body">Un début de phrase avec être, il choisit la bonne terminaison du participe passé.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Elle est... à toi de choisir la bonne fin. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner un début de phrase avec un verbe à accorder au participe passé avec être, il choisit la terminaison.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Mélanger les sujets masculins, féminins, singuliers et pluriels pour corser le jeu.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">accord du participe passé avec être</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Accorde : « Elle est (parti) tôt ce matin. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Elle est partie tôt ce matin. » Avec être, le participe passé s'accorde avec le sujet, ici féminin singulier.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Accorde : « Les filles sont (arrivé) les premières. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Les filles sont arrivées les premières. » Sujet féminin pluriel, donc participe en -ées.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Accorde : « Nous sommes (allé) au marché. » (un groupe de garçons)</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Nous sommes allés au marché. » Sujet masculin pluriel, donc participe en -és.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le mode du doute</h3>
+          <p class="card-body">Un début de phrase avec « il faut que », il conjugue le verbe au subjonctif présent.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Il faut que tu... complète comme tu peux. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner un début de phrase avec « il faut que » ou « je voudrais que », il conjugue au subjonctif présent.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Passer à des verbes irréguliers, être, avoir, faire, aller, pouvoir.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">présent du subjonctif</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Conjugue « être » : « Il faut que tu ... à l'heure. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Il faut que tu sois à l'heure. »</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Conjugue « faire » : « Je voudrais que nous ... nos devoirs ensemble. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Je voudrais que nous fassions nos devoirs ensemble. »</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Repère et corrige l'erreur : « Il faut que tu vas voir le médecin. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Il faut que tu ailles voir le médecin. » Après « il faut que », on utilise le subjonctif, pas l'indicatif.</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">02</span><h2 class="axis-title">Expression écrite courte</h2></div>
+    <p class="axis-note">Pas de bonne réponse unique ici : des ingrédients à respecter, et une étincelle pour s'inspirer si besoin.</p>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le portrait éclair</h3>
+          <p class="card-body">Décrire quelqu'un du café en train de bouger, sans dire qui c'est, l'autre doit deviner.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Décris quelqu'un du café, juste en train de bouger, sans dire qui c'est. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Choisir une personne, décrire son geste en quelques phrases, sans donner son identité, l'autre devine qui c'est.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Ajouter une contrainte, aucun adjectif de couleur, ou seulement des verbes d'action.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">portrait en action, choix du détail</span>
+            <span class="expand-hint" data-count="3 ingrédients"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="ingredients">
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">1</span><p class="ing-statement">Choisis un geste précis plutôt qu'une liste de qualités.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« Il essuie chaque tasse deux fois avant de la reposer, comme si le geste comptait plus que le résultat. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">2</span><p class="ing-statement">Ajoute un détail sensoriel, un bruit, une odeur, une texture.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« Le crissement de la chaise en fer quand il s'assoit, toujours au même endroit. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">3</span><p class="ing-statement">Termine sur une phrase courte qui donne une impression, pas une explication.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« On dirait qu'il a toujours un train à prendre. »</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le nuage de mots</h3>
+          <p class="card-body">Cinq mots pris autour de vous, à glisser dans une mini-scène de quelques lignes.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Je te donne cinq mots pris autour de nous, tu inventes une mini-scène avec. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Choisir cinq objets visibles au café, il doit tous les glisser dans un texte de quelques lignes.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Imposer un mot obligatoire en premier et un mot obligatoire en dernier.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">écriture à contraintes, vocabulaire</span>
+            <span class="expand-hint" data-count="3 ingrédients"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="ingredients">
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">1</span><p class="ing-statement">Utilise les cinq mots, mais pas forcément dans l'ordre donné.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">Avec tasse, chaise, soleil, bruit, attente : « Le soleil chauffait déjà la chaise en fer quand le bruit de la tasse posée sur la table a rompu l'attente. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">2</span><p class="ing-statement">Évite la simple liste, cherche un lien entre les mots plutôt qu'une juxtaposition.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">Relier deux mots par une image, plutôt que de les poser l'un après l'autre.</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">3</span><p class="ing-statement">Une seule phrase peut suffire, si elle est bien construite.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">Pas besoin d'un paragraphe entier, une phrase dense vaut mieux que trois pauvres.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le dictionnaire du quartier</h3>
+          <p class="card-body">Définir un mot du quartier à sa manière, comme une entrée de dictionnaire personnelle.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Si tu devais définir ce quartier avec un seul mot, lequel, et pourquoi ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Choisir un mot lié au quartier ou au café, en écrire une définition personnelle plutôt qu'un vrai dictionnaire.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Lui demander d'illustrer sa définition avec un souvenir précis.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">écriture personnelle, sens propre et figuré</span>
+            <span class="expand-hint" data-count="3 ingrédients"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="ingredients">
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">1</span><p class="ing-statement">Commence par le mot choisi, comme une entrée de dictionnaire.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« Le banc, nom masculin. Endroit où le temps s'arrête un peu plus longtemps qu'ailleurs. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">2</span><p class="ing-statement">Ajoute une touche personnelle ou un souvenir.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« C'est là que grand-père racontait toujours la même histoire. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">3</span><p class="ing-statement">Reste court, deux ou trois phrases suffisent.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">Pas besoin de tout dire, une définition tient en peu de mots.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">La brève de personnage</h3>
+          <p class="card-body">Observer quelqu'un et écrire trois phrases façon portrait journalistique, sans jugement.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Observe quelqu'un ici, comme si tu écrivais un article sur lui. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Repérer une personne, écrire trois phrases façon portrait journalistique, juste des faits observés.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Lui demander d'imaginer une phrase que cette personne pourrait dire.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">article sur un personnage, observation</span>
+            <span class="expand-hint" data-count="3 ingrédients"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="ingredients">
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">1</span><p class="ing-statement">Commence par une information factuelle et visuelle.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« Il porte toujours la même casquette bleue, été comme hiver. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">2</span><p class="ing-statement">Ajoute un détail qui intrigue ou surprend.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« Personne ne l'a jamais vu commander autre chose qu'un café noir. »</p></details>
+          </div>
+          <div class="ing">
+            <div class="ing-head"><span class="ing-num">3</span><p class="ing-statement">Termine par une phrase qui ouvre une question, sans y répondre.</p></div>
+            <details class="exemple"><summary></summary><p class="exemple-text">« On se demande bien ce qu'il attend, assis là, tous les matins. »</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">03</span><h2 class="axis-title">Chasse aux fautes et relecture</h2></div>
+    <p class="axis-note">Le fil rouge des trois bulletins : pas la compréhension, mais le soin du texte écrit.</p>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le texto plein de fautes</h3>
+          <p class="card-body">Un court texte avec plusieurs erreurs cachées, à repérer et corriger toutes.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Regarde ce message, il y a des fautes cachées, tu en trouves combien ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner un court texte avec plusieurs erreurs volontaires, il doit toutes les repérer et les corriger.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Chronométrer la chasse pour en faire un défi.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">relecture, accords et conjugaison</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Corrige : « Les enfant on manger tout les gâteaux avant que les invité arrivent. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Les enfants ont mangé tous les gâteaux avant que les invités arrivent. » Enfants et invités prennent un s, ont est le verbe avoir, mangé est le participe passé, tous s'accorde.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Corrige : « Elle a acheter des pommes rouge et vertes au marché. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Elle a acheté des pommes rouges et vertes au marché. » Acheté est le participe passé après avoir, rouges s'accorde au pluriel comme vertes.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Corrige : « Nous somme aller a la plage se matin. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Nous sommes allés à la plage ce matin. » Sommes est le verbe être, allés s'accorde au pluriel, à prend un accent, ce est un déterminant démonstratif.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le duel d'homophones</h3>
+          <p class="card-body">Une phrase à trou, il choisit le bon mot avant vous et justifie son choix.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Je te dis une phrase à trou, tu choisis le bon mot, plus vite que moi. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Proposer des phrases avec un homophone à choisir, il doit justifier son choix à voix haute.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Passer aux homophones plus rares, comme leur et leurs, ou quel et qu'elle.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">homophones grammaticaux, justification</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Choisis : « Il ... (a/à) mangé ... (a/à) midi. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Il a mangé à midi. » Le premier a est le verbe avoir, on peut le remplacer par avait, le second à est une préposition.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Choisis : « Je ne sais pas ... (ou/où) il est allé. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Je ne sais pas où il est allé. » Il s'agit d'un lieu, donc où avec accent, et non ou qui exprime un choix.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Choisis : « Paul a oublié ... (ces/ses) clés sur ... (ces/ses) chaises-là. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Paul a oublié ses clés sur ces chaises-là. » Ses est un possessif, les clés de Paul, ces est un démonstratif, les chaises que l'on montre.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">La relecture à voix haute</h3>
+          <p class="card-body">Lire un texte à voix haute fait souvent trébucher la voix sur les erreurs qu'elle ne sent pas justes.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Lis ce petit texte à voix haute, comme si tu le présentais à la classe. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner un court paragraphe à lire à voix haute sans l'avoir vu avant, puis relire en silence pour confirmer par écrit.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Lui demander d'expliquer pourquoi telle phrase sonnait bizarre à l'oreille.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">relecture à l'oreille, cohérence de phrase</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Lis et corrige : « Le chat monte sur la table et manges sa nourriture. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Le chat monte sur la table et mange sa nourriture. » Le sujet le chat reste le même pour les deux verbes, donc les deux se conjuguent à la troisième personne du singulier.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Lis et corrige : « Après avoir couru longtemps, il étaient fatigués. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Après avoir couru longtemps, il était fatigué. » Le sujet il est singulier, donc était et non étaient.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Lis et corrige : « Malgré la pluie, les enfant continue de jouer dehors. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Malgré la pluie, les enfants continuent de jouer dehors. » Sujet pluriel les enfants, donc continuent avec un t final au pluriel.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le correcteur professionnel</h3>
+          <p class="card-body">Un texte façon article, avec plusieurs erreurs mélangées, à corriger comme un vrai relecteur avant publication.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Tu es correcteur pour un journal, ce texte doit être publié demain, corrige-le. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner un petit texte avec des erreurs d'accord, de conjugaison et de ponctuation, il joue le rôle du correcteur.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Lui demander de justifier chaque correction, comme un vrai relecteur professionnel.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">relecture globale, plusieurs types d'erreurs</span>
+            <span class="expand-hint" data-count="3 exercices"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Corrige : « Hier, les commercant du marché a annoncé une nouvelle réduction sur les fruit et légumes. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Hier, les commerçants du marché ont annoncé une nouvelle réduction sur les fruits et légumes. » Commerçants prend une cédille et un s, ont est au pluriel, fruits prend un s.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Corrige : « La météo prévoit du soleil, mais il pourrait pleuvoir dans l'après midi. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« La météo prévoit du soleil, mais il pourrait pleuvoir dans l'après-midi. » Après-midi prend un trait d'union.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Corrige : « Les élèves étaient content d'apprendre que leur professeur parte en voyage. »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">« Les élèves étaient contents d'apprendre que leur professeur partait en voyage. » Contents s'accorde au pluriel, partait reste à l'indicatif car apprendre que n'appelle pas le subjonctif.</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <div class="rules">
+    <h2>Trois règles simples</h2>
+    <div class="rule"><span class="rule-mark">→</span><p>Le téléphone reste dans la poche. Ça se dit dès le premier jour, sur le ton de la règle du jeu, pas de l'interdiction.</p></div>
+    <div class="rule"><span class="rule-mark">→</span><p>Une séance qui ne prend pas s'arrête là, sans insister. Mieux vaut couper court que forcer jusqu'à la fin de l'heure.</p></div>
+    <div class="rule"><span class="rule-mark">→</span><p>Le mot français, exercice ou dictée n'a pas besoin d'être prononcé. « On teste un truc » suffit largement.</p></div>
+  </div>
+
+  <footer>usage interne · café du bas de chez vous · août 2026</footer>
+
+</div>
+
+</body>
+</html>
