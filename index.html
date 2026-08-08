@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Zizou</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #fbf6ec;
+    --bg-card: #ffffff;
+    --bg-card-hover: #fff9ee;
+    --line: #ecdfc4;
+    --sea: #3f8fbf;
+    --citrus: #e8a23d;
+    --coral: #e07a5f;
+    --mint: #6fae8e;
+    --text: #223b45;
+    --muted: #6b7f86;
+    --eyebrow: #4a7e94;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .bg-graph {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 96px 24px 96px;
+  }
+
+  header { text-align: center; margin-bottom: 64px; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin-bottom: 20px;
+  }
+  .eyebrow::before { content: "☀ "; color: var(--citrus); }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(38px, 7vw, 64px);
+    line-height: 1.05;
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  h1 span {
+    background: linear-gradient(120deg, var(--sea), var(--mint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 46ch;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin: 0 0 24px;
+  }
+
+  .portes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .porte {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 32px 28px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .porte::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, var(--sea));
+  }
+
+  a.porte:hover, a.porte:focus-visible {
+    border-color: var(--accent, var(--sea));
+    background: var(--bg-card-hover);
+    transform: translateY(-3px);
+    outline: none;
+  }
+
+  .porte-icon {
+    font-size: 30px;
+    margin-bottom: 18px;
+    display: block;
+  }
+
+  .porte-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+
+  .porte-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 18px;
+  }
+
+  .porte-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent, var(--sea));
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .porte.disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .porte.disabled .porte-arrow {
+    color: var(--muted);
+  }
+
+  .badge {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--citrus);
+    background: rgba(232, 162, 61, 0.14);
+    border: 1px solid rgba(232, 162, 61, 0.4);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  footer {
+    margin-top: 72px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--eyebrow);
+    text-align: center;
+  }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 64px 18px 64px; }
+    .portes { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="bg-graph" viewBox="0 0 900 1400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g stroke="#e0c98f" stroke-width="1" opacity="0.6">
+    <line x1="80" y1="120" x2="240" y2="220"/>
+    <line x1="240" y1="220" x2="180" y2="380"/>
+    <line x1="240" y1="220" x2="420" y2="200"/>
+    <line x1="700" y1="160" x2="560" y2="280"/>
+    <line x1="560" y1="280" x2="640" y2="440"/>
+    <line x1="120" y1="700" x2="280" y2="640"/>
+    <line x1="280" y1="640" x2="340" y2="820"/>
+    <line x1="750" y1="820" x2="600" y2="900"/>
+    <line x1="600" y1="900" x2="680" y2="1060"/>
+    <line x1="200" y1="1100" x2="360" y2="1180"/>
+    <line x1="360" y1="1180" x2="300" y2="1320"/>
+  </g>
+  <g fill="#e8a23d">
+    <circle cx="80" cy="120" r="3"/><circle cx="420" cy="200" r="2.5"/><circle cx="700" cy="160" r="3"/>
+    <circle cx="640" cy="440" r="2.5"/><circle cx="120" cy="700" r="3"/><circle cx="340" cy="820" r="2.5"/>
+    <circle cx="750" cy="820" r="3"/><circle cx="680" cy="1060" r="2.5"/><circle cx="200" cy="1100" r="3"/>
+    <circle cx="300" cy="1320" r="2.5"/>
+  </g>
+  <g fill="#3f8fbf">
+    <circle cx="240" cy="220" r="4"/><circle cx="560" cy="280" r="4"/><circle cx="280" cy="640" r="4"/>
+    <circle cx="600" cy="900" r="4"/><circle cx="360" cy="1180" r="4"/>
+  </g>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Le petit portail d'août</div>
+    <h1>Portail <span>Zizou</span></h1>
+    <p class="lede">Un point d'entrée unique pour les idées et les défis du mois, matière par matière.</p>
+  </header>
+
+  <div class="section-label">Deux portes pour commencer</div>
+
+  <div class="portes">
+
+    <a class="porte" href="maths.html" style="--accent: var(--sea);">
+      <span class="porte-icon">△</span>
+      <h2 class="porte-title">Maths</h2>
+      <p class="porte-desc">Automatismes, calcul littéral et Pythagore, en douze idées à piocher au café.</p>
+      <span class="porte-arrow">Entrer →</span>
+    </a>
+
+    <div class="porte disabled" style="--accent: var(--coral);">
+      <span class="badge">Bientôt</span>
+      <span class="porte-icon">✎</span>
+      <h2 class="porte-title">Français</h2>
+      <p class="porte-desc">La réserve d'idées pour l'écriture et l'expression arrive dans un second temps.</p>
+      <span class="porte-arrow">À venir</span>
+    </div>
+
+  </div>
+
+  <footer>usage interne · portail Zizou · août 2026</footer>
+
+</div>
+
+</body>
+</html>

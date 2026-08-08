@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réserve d'idées — maths avec Aziz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #fbf6ec;
+    --bg-card: #ffffff;
+    --bg-card-hover: #fff9ee;
+    --bg-script: #faf3e6;
+    --bg-exo: #f4f8f5;
+    --bg-solution: #eef6f1;
+    --line: #ecdfc4;
+    --sea: #3f8fbf;
+    --citrus: #e8a23d;
+    --coral: #e07a5f;
+    --mint: #6fae8e;
+    --text: #223b45;
+    --muted: #6b7f86;
+    --eyebrow: #4a7e94;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  .bg-graph {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 72px 24px 96px;
+  }
+
+  header { margin-bottom: 64px; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin-bottom: 18px;
+  }
+  .eyebrow::before { content: "☀ "; color: var(--citrus); }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 4.5vw, 46px);
+    line-height: 1.12;
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  h1 span {
+    background: linear-gradient(120deg, var(--sea), var(--mint));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lede { font-size: 16.5px; color: var(--muted); max-width: 60ch; margin: 0 0 8px; }
+
+  .stats {
+    display: flex; gap: 40px; margin-top: 36px; padding-top: 28px;
+    border-top: 1px solid var(--line); flex-wrap: wrap;
+  }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600; color: var(--coral); }
+  .stat-label { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  section.axis { margin-bottom: 52px; }
+
+  .axis-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; }
+  .axis-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--eyebrow);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; flex-shrink: 0; background: var(--bg-card);
+  }
+  .axis-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; margin: 0; }
+
+  .cards { display: grid; gap: 14px; }
+
+  /* --- carte devient un <details> --- */
+  details.card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+  details.card:hover { border-color: var(--sea); }
+  details.card[open] { border-color: var(--sea); }
+
+  summary.card-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 22px 24px;
+  }
+  summary.card-summary::-webkit-details-marker { display: none; }
+  summary.card-summary::marker { content: ""; }
+
+  .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; margin: 0 0 8px; color: var(--text); }
+  .card-body { font-size: 14.5px; color: var(--muted); margin: 0 0 16px; }
+
+  .script {
+    background: var(--bg-script); border-left: 3px solid var(--coral);
+    border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 0 0 16px;
+  }
+  .script-line { display: flex; gap: 10px; font-size: 13.5px; margin-bottom: 8px; }
+  .script-line:last-child { margin-bottom: 0; }
+  .script-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--coral); flex-shrink: 0; padding-top: 2px; width: 68px;
+  }
+  .script-text { color: var(--text); margin: 0; }
+  .script-text.quote { font-style: italic; }
+
+  .foot-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; color: #2f7a5c; background: rgba(111, 174, 142, 0.12);
+    border: 1px solid rgba(111, 174, 142, 0.35); border-radius: 20px; padding: 4px 12px;
+  }
+  .tag::before { content: "◇"; }
+  .axis:nth-of-type(2) .tag { color: #b5691f; background: rgba(232, 162, 61, 0.14); border-color: rgba(232, 162, 61, 0.4); }
+  .axis:nth-of-type(3) .tag { color: #2b6f8f; background: rgba(63, 143, 191, 0.12); border-color: rgba(63, 143, 191, 0.35); }
+
+  .expand-hint {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 500;
+    color: var(--sea); border: 1px solid rgba(63, 143, 191, 0.4); background: rgba(63, 143, 191, 0.08);
+    border-radius: 20px; padding: 4px 12px; white-space: nowrap;
+  }
+  .expand-hint .chevron { transition: transform 0.2s ease; display: inline-block; }
+  details.card[open] .expand-hint .chevron { transform: rotate(180deg); }
+  details.card[open] .expand-hint .expand-label::after { content: "masquer"; }
+  details.card:not([open]) .expand-hint .expand-label::after { content: "3 exercices"; }
+  .expand-hint .expand-label::after { }
+
+  /* --- panneau d'exercices --- */
+  .exercises {
+    padding: 4px 24px 24px;
+    border-top: 1px solid var(--line);
+    background: var(--bg-exo);
+  }
+
+  .exo { padding: 18px 0; border-bottom: 1px dashed var(--line); }
+  .exo:last-child { border-bottom: none; }
+
+  .exo-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .exo-num {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px;
+    color: #fff; background: var(--mint); border-radius: 50%; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .exo-statement { margin: 0; font-size: 14.5px; color: var(--text); }
+
+  details.solution { margin-left: 34px; }
+  details.solution summary {
+    cursor: pointer; list-style: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--coral);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  details.solution summary::-webkit-details-marker { display: none; }
+  details.solution summary::before { content: "▸"; transition: transform 0.15s ease; }
+  details.solution[open] summary::before { transform: rotate(90deg); }
+  details.solution summary::after { content: "Voir la solution"; }
+  details.solution[open] summary::after { content: "Solution"; }
+
+  .solution-text {
+    margin: 10px 0 0; padding: 10px 14px; background: var(--bg-solution);
+    border-left: 3px solid var(--mint); border-radius: 0 8px 8px 0;
+    font-size: 14px; color: var(--text);
+  }
+
+  .rules { margin-top: 64px; padding-top: 36px; border-top: 1px solid var(--line); }
+  .rules h2 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; margin: 0 0 22px; color: var(--text); }
+  .rule { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .rule:last-child { border-bottom: none; }
+  .rule-mark { color: var(--coral); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .rule p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  footer {
+    margin-top: 56px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--eyebrow); text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 48px 18px 64px; }
+    .script-line { flex-direction: column; gap: 2px; }
+    .script-label { width: auto; }
+    details.solution { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="bg-graph" viewBox="0 0 900 1400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g stroke="#e0c98f" stroke-width="1" opacity="0.6">
+    <line x1="80" y1="120" x2="240" y2="220"/>
+    <line x1="240" y1="220" x2="180" y2="380"/>
+    <line x1="240" y1="220" x2="420" y2="200"/>
+    <line x1="700" y1="160" x2="560" y2="280"/>
+    <line x1="560" y1="280" x2="640" y2="440"/>
+    <line x1="120" y1="700" x2="280" y2="640"/>
+    <line x1="280" y1="640" x2="340" y2="820"/>
+    <line x1="750" y1="820" x2="600" y2="900"/>
+    <line x1="600" y1="900" x2="680" y2="1060"/>
+    <line x1="200" y1="1100" x2="360" y2="1180"/>
+    <line x1="360" y1="1180" x2="300" y2="1320"/>
+  </g>
+  <g fill="#e8a23d">
+    <circle cx="80" cy="120" r="3"/><circle cx="420" cy="200" r="2.5"/><circle cx="700" cy="160" r="3"/>
+    <circle cx="640" cy="440" r="2.5"/><circle cx="120" cy="700" r="3"/><circle cx="340" cy="820" r="2.5"/>
+    <circle cx="750" cy="820" r="3"/><circle cx="680" cy="1060" r="2.5"/><circle cx="200" cy="1100" r="3"/>
+    <circle cx="300" cy="1320" r="2.5"/>
+  </g>
+  <g fill="#3f8fbf">
+    <circle cx="240" cy="220" r="4"/><circle cx="560" cy="280" r="4"/><circle cx="280" cy="640" r="4"/>
+    <circle cx="600" cy="900" r="4"/><circle cx="360" cy="1180" r="4"/>
+  </g>
+</svg>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Carnet à piocher, pas un programme</div>
+    <h1>Réserve d'idées pour <span>les séances maths</span> au café avec Aziz</h1>
+    <p class="lede">Trois axes, une idée par matin. Chaque carte a son script pour lancer l'activité, et en cliquant dessus, trois exercices tout prêts avec leur solution dépliable, à garder pour vous pendant qu'il cherche.</p>
+    <div class="stats">
+      <div><div class="stat-num">3</div><div class="stat-label">axes prioritaires</div></div>
+      <div><div class="stat-num">12</div><div class="stat-label">idées à piocher</div></div>
+      <div><div class="stat-num">36</div><div class="stat-label">exercices prêts</div></div>
+      <div><div class="stat-num">≤ 1h</div><div class="stat-label">par séance</div></div>
+    </div>
+  </header>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">01</span><h2 class="axis-title">Automatismes — relatifs et puissances</h2></div>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le duel chronométré</h3>
+          <p class="card-body">Vous vous lancez des calculs à tour de rôle, à l'oral, chrono en main. Celui qui répond juste le plus vite marque un point.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Aziz, duel de calcul, top chrono, c'est parti ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Chrono de 30 secondes, trois ou quatre calculs, on note les points sur un coin de serviette.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Ça prend : complexifier légèrement. Ça bloque : ralentir et le laisser reprendre l'avantage.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">multiplication et division des relatifs, puissances</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Calcule : (−8) × (−5)</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">40. Deux nombres négatifs multipliés donnent un résultat positif.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Calcule : (−36) ÷ 4</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">−9. Un négatif divisé par un positif donne un résultat négatif.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Calcule : 3² × (−2)³</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">−72. En effet 3² = 9 et (−2)³ = −8, donc 9 × (−8) = −72.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le juste prix</h3>
+          <p class="card-body">Vous donnez un résultat et Aziz doit trouver le plus vite possible une opération qui y mène. Plusieurs réponses sont possibles.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Je te donne un résultat, tu me trouves l'opération, plus vite que moi. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Annoncer un nombre relatif, chacun propose à tour de rôle une opération différente qui y mène.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Trop facile : imposer une contrainte, uniquement des puissances ou deux relatifs négatifs.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">manipulation inverse, sens du calcul</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Trouve une opération avec deux relatifs dont le produit vaut −18.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Par exemple (−3) × 6 = −18. Toute paire dont le produit fait −18 est valable.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Trouve une puissance dont le résultat vaut 64.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Par exemple 2⁶ = 64. On accepte aussi 4³ = 64 ou 8² = 64.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Trouve une division de deux relatifs dont le quotient vaut −7.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Par exemple (−35) ÷ 5 = −7. Toute paire au quotient −7 convient.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le calcul impossible</h3>
+          <p class="card-body">Vous proposez un calcul volontairement mal posé ou piégé, et Aziz doit repérer ce qui cloche avant même de calculer.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Regarde ce calcul, il y a un piège dedans, tu le vois ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Écrire ou dire un calcul avec une erreur de priorité opératoire ou de signe.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Une fois trouvé, lui demander d'inventer un piège à son tour, pour vous.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">priorités opératoires, repères sur les puissances</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Est-ce correct ? « 3 + 4 × 2 = 14 »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Faux. La multiplication passe avant l'addition : 4 × 2 = 8, puis 3 + 8 = 11. Le résultat correct est 11.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Est-ce correct ? « (−5)² = −25 »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Faux. (−5)² = (−5) × (−5) = 25, un résultat positif. −25 correspondrait à −(5²).</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Est-ce correct ? « 10 − 3 − 2 = 9 »</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Faux. On calcule de gauche à droite : 10 − 3 = 7, puis 7 − 2 = 5. Le résultat correct est 5.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le score du café</h3>
+          <p class="card-body">Vous inventez un score fictif autour de la commande et vous calculez ensemble le score final avec des relatifs.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« On invente un jeu, chaque commande vaut des points. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Barème fictif, café égale plus trois, retard égale moins deux, on calcule le score final.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Ajouter une règle bonus ou malus en cours de route pour complexifier.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">addition et soustraction de relatifs en contexte</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Un café vaut +3 points, un retard vaut −2 points. Aziz a commandé 4 cafés et eu 3 retards. Quel est son score ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">6 points. En effet 4 × 3 = 12 et 3 × (−2) = −6, donc 12 − 6 = 6.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Le score de départ est −5. Il gagne 3 bonus de +4 chacun. Quel est le score final ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">7. En effet −5 + (3 × 4) = −5 + 12 = 7.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Il perd 2 points, 5 fois de suite, puis gagne 15 points d'un coup. Score final en partant de 0 ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">5 points. En effet (5 × (−2)) + 15 = −10 + 15 = 5.</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">02</span><h2 class="axis-title">Calcul littéral</h2></div>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le tour de magie du nombre pensé</h3>
+          <p class="card-body">Le classique du nombre pensé. Une fois qu'il est épaté, vous lui proposez de comprendre le truc.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Pense à un nombre, je vais deviner lequel. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Double-le, ajoute 6, divise par 2, retire ton nombre de départ. Il annonce le résultat, vous devinez.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">« Tu veux savoir comment je fais ? » Écrire l'expression avec x au dos d'un ticket.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">expression littérale, développement, réduction</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Écris et simplifie l'expression du tour : on double x, on ajoute 6, on divise par 2, on retire x.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">(2x + 6) ÷ 2 − x = (x + 3) − x = 3. Le résultat est toujours 3, quel que soit le nombre choisi.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Vérifie le tour avec x = 7.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Double : 14, plus 6 : 20, divisé par 2 : 10, moins 7 : 3. On retrouve bien 3.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Développe et réduis : 2(x + 3) − x</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">2x + 6 − x = x + 6.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Inventer son propre tour</h3>
+          <p class="card-body">Une fois le mécanisme compris, il invente son propre tour pour le refaire à sa mère ou à un copain.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Maintenant à toi d'inventer un tour, pour le faire à maman. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Il choisit les opérations, vous vérifiez ensemble avec x que ça marche à tous les coups.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Tester le tour sur deux ou trois nombres différents pour prouver que ça fonctionne toujours.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">manipulation autonome, vérification par le calcul</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Vérifie si ce tour donne toujours 5 : triple le nombre, ajoute 15, divise par 3, retire le nombre de départ.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">(3x + 15) ÷ 3 − x = (x + 5) − x = 5. Oui, ça donne toujours 5.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Modifie ce tour pour qu'il donne toujours 10 au lieu de 5.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Il suffit de remplacer 15 par 30 : (3x + 30) ÷ 3 − x = (x + 10) − x = 10. D'autres réglages fonctionnent aussi.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Vérifie le tour modifié avec x = 4.</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Triple : 12, plus 30 : 42, divisé par 3 : 14, moins 4 : 10. Ça confirme le résultat.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">La machine à équations</h3>
+          <p class="card-body">Cette fois, c'est vous qui donnez le résultat final d'une suite d'opérations, et lui qui doit retrouver le nombre de départ.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Je pense à un nombre, voilà le résultat final, retrouve mon nombre de départ. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Annoncer la suite d'opérations et le résultat, il pose l'équation et la résout.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Complexifier avec une étape de plus ou un résultat non entier.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">résolution d'équation du premier degré</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Je multiplie mon nombre par 3, j'ajoute 4, j'obtiens 19. Quel est mon nombre de départ ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">x = 5. En effet 3x + 4 = 19, donc 3x = 15, donc x = 5.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Je retire 7 à mon nombre, je multiplie le résultat par 2, j'obtiens 10. Quel est mon nombre ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">x = 12. En effet 2(x − 7) = 10, donc x − 7 = 5, donc x = 12.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Je double mon nombre, j'ajoute 3, je retire 5, j'obtiens 12. Quel est mon nombre ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">x = 7. En effet 2x + 3 − 5 = 12, donc 2x − 2 = 12, donc 2x = 14, donc x = 7.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le prix mystère</h3>
+          <p class="card-body">Une situation concrète du café amène naturellement à poser une inconnue et une équation.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« J'ai payé huit dinars pour ça, devine combien coûte chaque chose. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Donner une relation entre deux prix, il pose l'inconnue et résout.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Changer les chiffres ou le nombre d'objets pour une deuxième manche.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">mise en équation d'un problème concret</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Un café et un croissant coûtent ensemble 8 dinars. Le croissant coûte 2 dinars de moins que le café. Prix de chaque chose ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Café = 5 dinars, croissant = 3 dinars. En posant x le prix du café : x + (x − 2) = 8, donc 2x = 10, donc x = 5.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Deux jus d'orange coûtent ensemble 14 dinars. Prix d'un jus ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">7 dinars. En effet 2x = 14, donc x = 7.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Trois boissons identiques et un gâteau à 4 dinars coûtent en tout 19 dinars. Prix d'une boisson ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">5 dinars. En effet 3x + 4 = 19, donc 3x = 15, donc x = 5.</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section class="axis">
+    <div class="axis-head"><span class="axis-num">03</span><h2 class="axis-title">Pythagore et géométrie</h2></div>
+    <div class="cards">
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le contrôle de l'angle droit</h3>
+          <p class="card-body">Aziz vérifie si un coin de table est vraiment droit, sans rapporteur, juste avec une règle et du calcul.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Tu crois que ce coin de table est vraiment droit ? Prouve-le. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Mesurer les côtés avec ce qu'on a sous la main, vérifier avec le théorème de Pythagore.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Chercher un autre angle du café à vérifier, pour comparer.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">théorème de Pythagore, réciproque, application pratique</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Une table a des côtés de 3 m et 4 m, et une diagonale de 5 m. L'angle est-il droit ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Oui. En effet 3² + 4² = 9 + 16 = 25 = 5². La réciproque de Pythagore confirme l'angle droit.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Un cadre a des côtés de 6 cm et 8 cm, et une diagonale mesurée à 11 cm. L'angle est-il droit ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Non. Car 6² + 8² = 100, ce qui correspond à une diagonale de 10 cm, pas 11 cm.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Un triangle a des côtés 5 cm, 12 cm et 13 cm. Est-ce un triangle rectangle ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Oui. En effet 5² + 12² = 25 + 144 = 169 = 13².</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">L'estimation impossible</h3>
+          <p class="card-body">Une distance qu'il ne peut pas mesurer directement, à approcher avec ce qu'on a sous la main.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Comment tu ferais pour connaître la hauteur de ce lampadaire sans y grimper ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Réfléchir ensemble à une méthode, mesurer ce qui est mesurable, calculer le reste.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Comparer son estimation à une vérification rapide, pour voir s'il avait raison.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">Pythagore en contexte, sens de la mesure</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Un bâton de 1 m projette une ombre de 1,5 m. Au même moment, un lampadaire projette une ombre de 6 m. Quelle est sa hauteur ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">4 m. Le rapport ombre sur hauteur est le même pour les deux : 6 ÷ 1,5 = 4, donc la hauteur du lampadaire vaut 4 fois celle du bâton.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Deux points d'un parc sont espacés de 30 m vers l'est et 40 m vers le nord. Quelle est la distance à vol d'oiseau ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">50 m. En effet racine de (30² + 40²) = racine de 2500 = 50.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Une échelle de 5 m est posée contre un mur, son pied est à 3 m du mur. À quelle hauteur touche-t-elle le mur ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">4 m. En effet racine de (5² − 3²) = racine de 16 = 4.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le dessin qui ment</h3>
+          <p class="card-body">Une figure qui semble être un triangle rectangle mais ne l'est pas vraiment. À lui de le prouver ou de le réfuter.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Regarde ce triangle, il a l'air rectangle, tu paries ? »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Dessiner rapidement une figure trompeuse sur une serviette, donner les longueurs, il vérifie par le calcul.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Lui demander de dessiner un piège à son tour, pour vous.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">réciproque de Pythagore, esprit critique face à une figure</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">Un triangle a des côtés 7 cm, 9 cm et 12 cm. Est-il rectangle ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Non. Car 7² + 9² = 130, différent de 12² = 144. Il a l'air rectangle mais ne l'est pas.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Un triangle a des côtés 9 cm, 12 cm et 15 cm. Est-il rectangle ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Oui. Car 9² + 12² = 81 + 144 = 225 = 15².</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Un triangle a des côtés 6 cm, 7 cm et 9 cm. Est-il rectangle ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">Non. Car 6² + 7² = 85, différent de 9² = 81. Presque rectangle, mais pas tout à fait.</p></details>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary class="card-summary">
+          <h3 class="card-title">Le plan du quartier</h3>
+          <p class="card-body">Calculer la distance à vol d'oiseau entre deux endroits qu'il connaît, et la comparer au trajet réel.</p>
+          <div class="script">
+            <div class="script-line"><span class="script-label">Accroche</span><p class="script-text quote">« Ouvre la carte, on calcule la vraie distance entre chez nous et là où tu veux. »</p></div>
+            <div class="script-line"><span class="script-label">Déroulé</span><p class="script-text">Repérer deux points, calculer la distance à vol d'oiseau, comparer au trajet réel affiché.</p></div>
+            <div class="script-line"><span class="script-label">Relance</span><p class="script-text">Refaire avec un autre trajet, choisi cette fois par lui.</p></div>
+          </div>
+          <div class="foot-row">
+            <span class="tag">Pythagore appliqué, distance euclidienne versus réelle</span>
+            <span class="expand-hint"><span class="expand-label"></span><span class="chevron">▾</span></span>
+          </div>
+        </summary>
+        <div class="exercises">
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">1</span><p class="exo-statement">La maison est à 4 km à l'est de l'école, le café à 3 km au nord de l'école. Distance maison-café à vol d'oiseau ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">5 km. En effet racine de (4² + 3²) = racine de 25 = 5.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">2</span><p class="exo-statement">Deux amis partent du même point, l'un marche 8 km vers le sud, l'autre 6 km vers l'ouest. Distance qui les sépare ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">10 km. En effet racine de (8² + 6²) = racine de 100 = 10.</p></details>
+          </div>
+          <div class="exo">
+            <div class="exo-head"><span class="exo-num">3</span><p class="exo-statement">Un parc rectangulaire mesure 12 m sur 5 m. Longueur de sa diagonale ?</p></div>
+            <details class="solution"><summary></summary><p class="solution-text">13 m. En effet racine de (12² + 5²) = racine de 169 = 13.</p></details>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <div class="rules">
+    <h2>Trois règles simples</h2>
+    <div class="rule"><span class="rule-mark">→</span><p>Le téléphone reste dans la poche, sauf pour le chrono ou une carte. Ça se dit dès le premier jour, sur le ton de la règle du jeu, pas de l'interdiction.</p></div>
+    <div class="rule"><span class="rule-mark">→</span><p>Une séance qui ne prend pas s'arrête là, sans insister. Mieux vaut couper court que forcer jusqu'à la fin de l'heure.</p></div>
+    <div class="rule"><span class="rule-mark">→</span><p>Le mot maths, exercice ou programme n'a pas besoin d'être prononcé. « On teste un truc » suffit largement.</p></div>
+  </div>
+
+  <footer>usage interne · café du bas de chez vous · août 2026</footer>
+
+</div>
+
+</body>
+</html>
